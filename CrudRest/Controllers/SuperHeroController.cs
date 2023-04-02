@@ -1,4 +1,5 @@
-﻿using CrudRest.Data;
+﻿using Azure.Core;
+using CrudRest.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,26 +10,6 @@ namespace CrudRest.Controllers
     [ApiController]
     public class SuperHeroController : ControllerBase
     {
-        private List<SuperHero> heroes = new List<SuperHero>
-        {
-            new SuperHero
-            {
-                Id = 1,
-                Name = "Bat Man",
-                FirstName = "Bruce",
-                LastName = "Wayne",
-                Place = "Gotham"
-            },
-            new SuperHero
-            {
-                Id = 2,
-                Name = "Spider Man",
-                FirstName = "Peter",
-                LastName = "Parker",
-                Place = "New york city"
-            }
-        };
-
         private readonly DataContext _context;
 
         public SuperHeroController(DataContext dataContext)
@@ -86,16 +67,16 @@ namespace CrudRest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SuperHero>> Delete(int id)
         {
-            var hero = heroes.Find(h => h.Id == id);
-
-            if (hero == null)
+            var dbHero = await _context.SuperHeroes.FindAsync(id);
+            if (dbHero == null)
             {
                 return BadRequest("Hero not found");
             }
 
-            this.heroes.Remove(hero);
+            _context.SuperHeroes.Remove(dbHero);
+            await _context.SaveChangesAsync();
 
-            return Ok(hero);
+            return Ok(await _context.SuperHeroes.ToListAsync());
         }
 
     }
