@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CrudRest.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CrudRest.Controllers
 {
@@ -27,16 +29,23 @@ namespace CrudRest.Controllers
             }
         };
 
+        private readonly DataContext _context;
+
+        public SuperHeroController(DataContext dataContext)
+        {
+            this._context = dataContext;
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<SuperHero>>> Get()
         {
-            return Ok(this.heroes);
+            return Ok(await _context.SuperHeroes.ToListAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SuperHero>> Get(int id)
         {
-            var hero = heroes.Find(h => h.Id == id);
+            var hero = await _context.SuperHeroes.FindAsync(id);
 
             if (hero == null)
             {
