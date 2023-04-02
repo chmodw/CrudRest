@@ -30,8 +30,7 @@ namespace CrudRest.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "SuperHeroes");
+            migrationBuilder.DropTable("SuperHeroes");
         }
     }
 }
